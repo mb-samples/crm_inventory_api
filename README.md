@@ -10,7 +10,7 @@ Flask-based REST API for managing customers, products, orders, and inventory wit
 - ✅ **100% Test Coverage** - Automated validation with mock data
 - ✅ **OpenAPI 3.0 Specification** - Import into Postman, Insomnia, or any API tool
 
-## Features
+## Features 
 
 ### Core Operations
 - Customer management (CRM)
