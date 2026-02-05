@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-02-05T12:14:35.728958",
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "failed": 0,
+    "warnings": 0
+  },
+  "results": [
+    {
+      "test": "Health endpoint responds",
+      "status": "PASS",
+      "message": "Status: 200"
+    },
+    {
+      "test": "Health response has required fields",
+      "status": "PASS",
+      "message": "All fields present"
+    },
+    {
+      "test": "Health status is 'healthy'",
+      "status": "PASS",
+      "message": "Status: healthy"
+    },
+    {
+      "test": "GET /api/customers returns 200",
+      "status": "PASS",
+      "message": "Status: 200"
+    },
+    {
+      "test": "Customer list has required fields",
+      "status": "PASS",
+      "message": "All fields present"
+    },
+    {
+      "test": "Customer list contains array",
+      "status": "PASS",
+      "message": "Type: <class 'list'>"
+    },
+    {
+      "test": "Customer has id field",
+      "status": "PASS",
+      "message": "Fields: ['email', 'id', 'name', 'status']"
+    },
+    {
+      "test": "GET /api/customers/1 returns 200",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Customer detail has required fields",
+      "status": "PASS",
+      "message": "Fields: ['address', 'company', 'created_at', 'email', 'id', 'name', 'phone', 'status']"
+    },
+    {
+      "test": "POST /api/customers returns 201",
+      "status": "PASS",
+      "message": "Status: 201"
+    },
+    {
+      "test": "GET /api/products returns 200",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Product list has data array",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Product has required fields",
+      "status": "PASS",
+      "message": "Fields: ['category', 'id', 'name', 'price', 'stock']"
+    },
+    {
+      "test": "GET /api/products/1 returns 200",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Product has price field",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "POST /api/products returns 201",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "GET /api/orders returns 200",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Order has required fields",
+      "status": "PASS",
+      "message": "Fields: ['customer_id', 'id', 'order_date', 'status', 'total']"
+    },
+    {
+      "test": "GET /api/orders/1 returns 200",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Order has items array",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "POST /api/orders returns 201",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Pagination parameters accepted",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Category filter parameter accepted",
+      "status": "PASS",
+      "message": ""
+    },
+    {
+      "test": "Response is JSON",
+      "status": "PASS",
+      "message": "Content-Type: application/json"
+    }
+  ]
+}
