@@ -16,11 +16,13 @@ class ProductService:
                 query.where('category = ?', category)
             if status:
                 query.where('status = ?', status)
-            query.order('created_at DESC').paginate(page, limit)
+            query.order('created_at', 'DESC').paginate(page, limit)
             
             cursor = conn.cursor()
             cursor.execute(query.sql, query.params)
-            return rows_to_dict_list(cursor)
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            return [dict(zip(columns, row)) for row in rows]
     
     @staticmethod
     def get_by_id(product_id):

@@ -75,6 +75,12 @@ class QueryBuilder:
         self.offset_value = offset
         return self
     
+    def paginate(self, page, page_size):
+        """Set pagination (page-based)"""
+        self.offset_value = (page - 1) * page_size
+        self.limit_value = page_size
+        return self
+    
     def build(self):
         """Build the final query"""
         # SELECT clause
@@ -116,6 +122,18 @@ class QueryBuilder:
                 query += f' FETCH NEXT {self.limit_value} ROWS ONLY'
         
         return query, tuple(self.where_params)
+    
+    @property
+    def sql(self):
+        """Get SQL query string"""
+        query, _ = self.build()
+        return query
+    
+    @property
+    def params(self):
+        """Get query parameters"""
+        _, params = self.build()
+        return params
 
 
 def build_insert_query(table_name: str, data: Dict[str, Any]) -> Tuple[str, tuple]:

@@ -1,8 +1,8 @@
 """
 Database connection module with connection pooling
-Handles MSSQL connections using pyodbc
+Handles MSSQL connections using pyodbc or mock database
 """
-import pyodbc
+import os
 import logging
 from contextlib import contextmanager
 from threading import Lock
@@ -10,6 +10,24 @@ from queue import Queue, Empty
 from config.config import get_config
 
 logger = logging.getLogger(__name__)
+
+# Try to import pyodbc, fall back to mock if not available or if USE_MOCK_DB is set
+USE_MOCK_DB = os.getenv('USE_MOCK_DB', 'true').lower() == 'true'
+
+if USE_MOCK_DB:
+    logger.info("Using MOCK database connection")
+    from app.utils.mock_db import mock_connect as pyodbc_connect
+    pyodbc = None
+else:
+    try:
+        import pyodbc
+        pyodbc_connect = pyodbc.connect
+        logger.info("Using REAL pyodbc database connection")
+    except ImportError as e:
+        logger.warning(f"pyodbc not available: {e}. Falling back to mock database")
+        from app.utils.mock_db import mock_connect as pyodbc_connect
+        pyodbc = None
+        USE_MOCK_DB = True
 
 class DatabaseConnectionPool:
     """Connection pool manager for MSSQL database"""
@@ -43,11 +61,11 @@ class DatabaseConnectionPool:
     def _create_connection(self):
         """Create a new database connection"""
         try:
-            conn = pyodbc.connect(self.connection_string, timeout=self.timeout)
+            conn = pyodbc_connect(self.connection_string, timeout=self.timeout)
             conn.autocommit = False
             logger.debug("New database connection created")
             return conn
-        except pyodbc.Error as e:
+        except Exception as e:
             logger.error(f"Failed to create database connection: {str(e)}")
             raise
     
@@ -212,7 +230,7 @@ def execute_query(query, params=None, fetch_one=False, fetch_all=True, commit=Fa
             else:
                 return cursor.rowcount
                 
-        except pyodbc.Error as e:
+        except Exception as e:
             logger.error(f"Query execution error: {str(e)}")
             logger.error(f"Query: {query}")
             logger.error(f"Params: {params}")
@@ -235,7 +253,7 @@ def execute_many(query, params_list, commit=True):
         try:
             cursor.executemany(query, params_list)
             return cursor.rowcount
-        except pyodbc.Error as e:
+        except Exception as e:
             logger.error(f"Batch execution error: {str(e)}")
             raise
 
