@@ -41,14 +41,13 @@ Flask-based REST API for managing customers, products, orders, and inventory wit
 # Activate virtual environment
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Start server with Swagger documentation
-python swagger_api.py
+# Start server
+python app.py
 ```
 
 **Server will be available at:**
 - API Server: http://localhost:5000
-- Swagger UI: http://localhost:5000/apidocs/
-- OpenAPI Spec: http://localhost:5000/apispec.json
+- Health Check: http://localhost:5000/health
 
 ### 2. Test the API
 
@@ -108,14 +107,14 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install Flask flasgger flask-cors requests python-dotenv
 ```
 
-4. Start the mock API server:
+4. Start the API server:
 ```bash
-python swagger_api.py
+python app.py
 ```
 
-5. Open Swagger UI:
+5. Test the API:
 ```
-http://localhost:5000/apidocs/
+http://localhost:5000/health
 ```
 
 ### For Production (With Real Database)
@@ -165,12 +164,13 @@ SECRET_KEY=your-secret-key-here
 
 ### Mock API Server (Recommended for Testing)
 ```bash
-# Start with Swagger documentation
-python swagger_api.py
+# Start with mock database (no real database needed)
+export USE_MOCK_DB=true
+python app.py
 ```
 
 Access at:
-- **Swagger UI**: http://localhost:5000/apidocs/
+- **Health Check**: http://localhost:5000/health
 - **API Server**: http://localhost:5000
 
 ### Production Mode (With Real Database)
@@ -284,7 +284,7 @@ crm_inventory_api/
 │   ├── test_analytics.py        # Analytics tests
 │   ├── validate_api.py          # Comprehensive validation
 │   └── quick_test.sh            # Bash test script
-├── swagger_api.py               # Mock API with Swagger docs
+├── app.py                       # Application entry point
 ├── openapi.yaml                 # OpenAPI 3.0 specification
 ├── postman_collection.json      # Postman collection
 ├── app.py                       # Production entry point
@@ -571,7 +571,8 @@ lsof -i :5000
 kill -9 <PID>
 
 # Try different port
-PORT=8000 python swagger_api.py
+export PORT=8000
+python app.py
 ```
 
 ### Database Connection Issues

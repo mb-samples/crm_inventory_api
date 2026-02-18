@@ -41,13 +41,14 @@ application/json
 # Activate virtual environment
 source venv/bin/activate
 
-# Start server with Swagger documentation
-python swagger_api.py
+# Start server
+python app.py
 ```
 
-### 2. Access Documentation
+### 2. Access API
 
-- **Swagger UI**: http://localhost:5000/apidocs/
+- **Health Check**: http://localhost:5000/health
+- **API Endpoints**: http://localhost:5000/api/
 - **OpenAPI Spec**: http://localhost:5000/apispec.json
 - **Health Check**: http://localhost:5000/health
 
@@ -517,7 +518,7 @@ Always check response status codes and handle errors appropriately.
 
 ### Files in This Project
 
-- `swagger_api.py` - API server with Swagger documentation
+- `app.py` - Main API server application
 - `openapi.yaml` - OpenAPI 3.0 specification
 - `validate_api.py` - Automated validation script
 - `test_endpoints.py` - Python testing script

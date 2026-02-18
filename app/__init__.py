@@ -75,10 +75,12 @@ def create_app(config_name='development'):
         from app.routes.customer_routes import customer_bp
         from app.routes.product_routes import product_bp
         from app.routes.order_routes import order_bp
+        from app.routes.analytics_routes import analytics_bp
         
         app.register_blueprint(customer_bp, url_prefix='/api/customers')
         app.register_blueprint(product_bp, url_prefix='/api/products')
         app.register_blueprint(order_bp, url_prefix='/api/orders')
+        app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
         logger.info("API routes registered successfully")
     else:
         logger.warning("API routes not registered - database unavailable")

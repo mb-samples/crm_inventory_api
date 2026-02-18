@@ -47,10 +47,10 @@ Perfect for development and testing:
 
 ```bash
 source venv311/bin/activate
-python swagger_api.py
+python app.py
 ```
 
-Access at: http://localhost:5000/apidocs/
+Access at: http://localhost:5000/health
 
 ### Option 2: Real Application (Requires Database)
 
@@ -99,13 +99,12 @@ If you see import errors:
 ```
 crm_inventory_api/
 ├── venv311/              # Python 3.11 virtual environment
-├── app/                  # Real application with database
+├── app/                  # Application code
 │   ├── models/          # Database models
 │   ├── routes/          # API routes
 │   ├── services/        # Business logic
 │   └── utils/           # Database connection & helpers
-├── swagger_api.py       # Mock API server (no database)
-├── app.py               # Real application entry point
+├── app.py               # Application entry point
 ├── requirements.txt     # Python dependencies
 ├── setup.sh             # Automated setup script
 └── .env                 # Environment configuration
@@ -113,6 +112,6 @@ crm_inventory_api/
 
 ## Next Steps
 
-1. For API testing: Use `swagger_api.py`
+1. For API testing: Use `app.py` with `USE_MOCK_DB=true`
 2. For database setup: Follow `database/schema.sql`
 3. For production: Configure `.env` and run `app.py`

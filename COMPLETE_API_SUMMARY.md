@@ -68,7 +68,7 @@ curl http://localhost:5000/api/analytics/customer-segmentation | python -m json.
 
 ### API Specifications
 - `openapi.yaml` - OpenAPI 3.0 specification
-- `swagger_api.py` - API server with Swagger docs
+- `app.py` - Main API server application
 - `postman_collection.json` - Postman collection
 
 ### Testing Scripts
@@ -287,8 +287,7 @@ curl -s http://localhost:5000/api/analytics/sales-performance | \
 ## 📦 What's Included
 
 ### Server Files
-- `swagger_api.py` - Main API server with all endpoints
-- `test_api.py` - Simple mock API (backup)
+- `app.py` - Main API server application
 - `.env` - Environment configuration
 
 ### Documentation
