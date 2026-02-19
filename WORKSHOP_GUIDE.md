@@ -434,21 +434,88 @@ atx custom def publish \
 
 ### 4.2 Execute Transformation (Interactive Mode)
 
-**Option A: Interactive Execution (Recommended for Workshop)**
+**Option A: Interactive Execution with Auto-Approve (Recommended for Workshop)**
 
 ```bash
-# Execute transformation with interactive mode
+# Execute transformation with auto-approve mode for smoother workshop experience
 atx custom def exec \
     -n mssql-to-aurora-postgres \
     -p . \
-    -c "python -m py_compile app/**/*.py"
+    -x
+
+# The -x flag enables "auto-approve" mode which:
+# - Automatically approves tool usage
+# - Reduces interruptions during transformation
+# - Allows the agent to work more autonomously
+# - Still allows you to monitor progress and provide feedback
 
 # The agent will:
 # 1. Analyze all Python files
 # 2. Create an execution plan
 # 3. Pause for your review
-# 4. Execute transformations step-by-step
-# 5. Allow you to provide feedback
+# 4. Execute transformations with auto-approved tools
+# 5. Allow you to provide feedback when needed
+```
+
+**Option B: Fully Interactive Mode (More Control)**
+
+```bash
+# Execute without auto-approve for maximum control
+atx custom def exec \
+    -n mssql-to-aurora-postgres \
+    -p .
+
+# Without -x flag:
+# - You'll be prompted to approve each tool usage
+# - More interruptions but more visibility
+# - Better for learning tool behavior
+# - Can be slower for large transformations
+```
+
+**Option C: With Inline Validation (Production Use)**
+
+For production scenarios where you want automatic validation after each change:
+
+```bash
+# Execute with validation command and auto-approve
+atx custom def exec \
+    -n mssql-to-aurora-postgres \
+    -p . \
+    -x \
+    -c "python -m compileall app"
+
+# This will:
+# - Auto-approve tool usage
+# - Run validation command after transformations
+# - Catch syntax errors immediately
+```
+
+**Understanding Auto-Approve Mode:**
+- **-x flag**: Auto-approves tool usage (file reads, writes, searches)
+- **Recommended for workshops**: Reduces friction, faster execution
+- **Still interactive**: You can still provide feedback and guidance
+- **Safe for this workshop**: All changes are in a git branch, easy to revert
+
+**Note on Validation:**
+- **Workshop approach**: Skip `-c` flag, validate manually after (recommended for learning)
+- **Production approach**: Use `-c "python -m compileall app"` for automatic validation
+- The transformation definition may include a validation command
+- For Python syntax validation, use: `python -m compileall app`
+- This compiles all Python files to bytecode, catching syntax errors
+- To log output: `python -m compileall app > build.log 2>&1`
+- For functional validation, use the test scripts after transformation completes
+
+**Recommended Validation Approach:**
+```bash
+# Step 1: Syntax validation (fast, catches compile errors)
+python -m compileall app
+
+# Step 2: Import validation (catches missing dependencies)
+python -c "from app import create_app; print('Imports OK')"
+
+# Step 3: Functional validation (tests actual behavior)
+python test_endpoints.py
+python test_analytics.py
 ```
 
 **During Execution:**
@@ -456,11 +523,33 @@ atx custom def exec \
 - Approve or provide feedback on proposed changes
 - Monitor progress through each transformation step
 - Interrupt if you see issues (Ctrl+C)
+- The agent may try to view directories as files (e.g., "Path config is not a file") - this is normal exploration behavior and can be ignored
 
 
 ### 4.3 Review Execution Plan
 
-The agent will present an execution plan. Review for:
+The agent will present an execution plan. 
+
+
+**Copy Plan for Detailed Review:**
+
+The execution plan is saved as a JSON file that you can review in your IDE:
+
+```bash
+# Find the plan file (it's stored in a timestamped directory)
+ls -lt ~/.aws/atx/custom/ | head -5
+
+# Copy the plan to your project root for easy review
+# Replace the timestamp with your actual directory
+cp ~/.aws/atx/custom/2026-02-*/plan.json ./plan.json
+
+# Now you can open plan.json in your IDE to review:
+# - Detailed file-by-file changes
+# - Specific transformation patterns
+# - Dependencies between changes
+```
+
+Review for:
 
 **Expected Changes:**
 1. ✅ `config/config.py` - PostgreSQL connection string
@@ -469,25 +558,14 @@ The agent will present an execution plan. Review for:
 4. ✅ All service files - Query syntax updates
 5. ✅ `app/utils/advanced_data_layer.py` - Complex query transformations
 
-**Sample Plan Output:**
-```
-Execution Plan:
-==============
-Phase 1: Analysis Complete
-- Found 28 files requiring changes
-- Identified 156 MSSQL-specific patterns
-- Cataloged 89 query transformations needed
 
-Phase 2: Transformation Steps
-1. Update config/config.py (connection string)
-2. Update app/utils/db_connection.py (driver)
-3. Update requirements.txt (dependencies)
-4. Transform queries in app/services/*.py (14 files)
-5. Transform queries in app/utils/advanced_data_layer.py
-6. Update error handling across all files
+**What to Look for in plan.json:**
+- Files that will be modified
+- Specific code patterns being transformed
+- Order of operations
+- Any files that might be missed
 
-Proceed with transformation? (y/n):
-```
+**Tip:** Keep plan.json for documentation purposes - it's a great record of what transformations were applied.
 
 ### 4.4 Monitor Transformation Progress
 
@@ -610,6 +688,19 @@ Connection layer working!
 ```
 
 **Note:** The mock database simulates PostgreSQL responses without actual connections.
+
+**Additional Validation:**
+
+```bash
+# Validate Python syntax across all files
+python -m compileall app
+
+# Check for any compilation errors
+echo $?  # Should output 0 if successful
+
+# Verify imports work
+python -c "from app import create_app; print('All imports successful')"
+```
 
 
 ### 5.4 Run Application Tests
@@ -825,13 +916,21 @@ git push origin workshop-migration
 ### 7.2 Workshop Summary
 
 **What You Accomplished:**
+
 ✅ Set up AWS Transform Custom CLI and environment
+
 ✅ Analyzed MSSQL-specific code patterns in Flask application
+
 ✅ Published custom transformation definition to registry
+
 ✅ Executed transformation with interactive feedback
+
 ✅ Validated migrated application against Aurora PostgreSQL
+
 ✅ Reviewed and approved continual learning knowledge items
+
 ✅ Successfully migrated 39 API endpoints with 100% test coverage
+
 
 **Key Metrics:**
 - Files transformed: ~28 Python files
@@ -937,6 +1036,34 @@ python validate_api.py -v
 # Ensure you provided feedback during execution
 # Check that -d flag was NOT used (disables learning)
 # Wait a few minutes for processing
+```
+
+**Issue 6: "Path X is not a file" Errors During Execution**
+```bash
+# This is normal - the agent is exploring the codebase structure
+# It tries to read directories as files and discovers they're directories
+# These errors can be safely ignored
+# Common examples: "Path config is not a file", "Path app is not a file"
+```
+
+**Issue 7: Compile/Validation Command Errors**
+```bash
+# If you see errors with: python -m py_compile app/**/*.py
+# The glob pattern **/*.py doesn't expand properly in most shells
+
+# Better alternatives:
+# Option 1: Use compileall (recommended)
+python -m compileall app > build.log 2>&1
+
+# Option 2: Use find with py_compile
+find app -name "*.py" -exec python -m py_compile {} \;
+
+# Option 3: Check the build.log if it was created
+cat build.log
+
+# Option 4: Skip validation during transformation and validate after
+python test_endpoints.py
+python test_analytics.py
 ```
 
 ### 7.6 Workshop Feedback
