@@ -55,7 +55,7 @@ def get_inventory_status():
         description: Inventory status across all warehouses
     """
     try:
-        data = AdvancedDataLayer.get_inventory_status()
+        data = AdvancedDataLayer.get_inventory_status_report()
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching inventory status: {str(e)}")
@@ -75,13 +75,25 @@ def get_sales_performance():
         enum: [day, week, month, quarter, year]
         default: month
         description: Time period for aggregation
+      - name: start_date
+        in: query
+        type: string
+        format: date
+        description: Start date for analysis
+      - name: end_date
+        in: query
+        type: string
+        format: date
+        description: End date for analysis
     responses:
       200:
         description: Sales performance data
     """
     try:
         period = request.args.get('period', 'month')
-        data = AdvancedDataLayer.get_sales_performance(period)
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        data = AdvancedDataLayer.get_sales_performance_by_period(period, start_date, end_date)
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching sales performance: {str(e)}")
@@ -106,7 +118,7 @@ def get_product_performance():
     """
     try:
         top_n = int(request.args.get('top_n', 20))
-        data = AdvancedDataLayer.get_product_performance(top_n)
+        data = AdvancedDataLayer.get_product_performance_analysis(top_n)
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching product performance: {str(e)}")
@@ -119,12 +131,25 @@ def get_order_fulfillment():
     ---
     tags:
       - Analytics
+    parameters:
+      - name: start_date
+        in: query
+        type: string
+        format: date
+        description: Start date for analysis
+      - name: end_date
+        in: query
+        type: string
+        format: date
+        description: End date for analysis
     responses:
       200:
         description: Order fulfillment statistics
     """
     try:
-        data = AdvancedDataLayer.get_order_fulfillment_metrics()
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        data = AdvancedDataLayer.get_order_fulfillment_metrics(start_date, end_date)
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching order fulfillment: {str(e)}")
@@ -160,7 +185,7 @@ def get_payment_collection():
         description: Payment collection metrics
     """
     try:
-        data = AdvancedDataLayer.get_payment_collection_efficiency()
+        data = AdvancedDataLayer.get_payment_collection_report()
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching payment collection: {str(e)}")
@@ -192,18 +217,24 @@ def get_user_activity():
     tags:
       - Analytics
     parameters:
-      - name: days
+      - name: start_date
         in: query
-        type: integer
-        default: 30
-        description: Number of days to analyze
+        type: string
+        format: date
+        description: Start date for analysis
+      - name: end_date
+        in: query
+        type: string
+        format: date
+        description: End date for analysis
     responses:
       200:
         description: User activity metrics
     """
     try:
-        days = int(request.args.get('days', 30))
-        data = AdvancedDataLayer.get_user_activity_summary(days)
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        data = AdvancedDataLayer.get_activity_summary_by_user(start_date, end_date)
         return jsonify(data), 200
     except Exception as e:
         logger.error(f"Error fetching user activity: {str(e)}")
